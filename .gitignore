@@ -1,0 +1,21 @@
+# Android
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+
+# Firebase - google-services.json contains no secrets (public config), but gitignore by default
+# Uncomment to ignore: google-services.json
+
+# Sensitive
+*.jks
+*.keystore
+keystore.properties
