@@ -1,5 +1,31 @@
 # NexusCoreAndroid — Agent Instructions
 
+## NEVER COMMIT SECRETS — CRITICAL
+
+**This has caused incidents. Read carefully before every commit.**
+
+Files that must NEVER be committed to git:
+
+- `google-services.json` — contains a Firebase API key; it is gitignored; do NOT commit it
+- `local.properties` — may contain SDK paths or keys
+- Any `.env` file, service account JSON, or file with a real API key
+
+`google-services.json` is required to build but must NOT be in git. Get it locally via:
+
+```bash
+firebase apps:sdkconfig ANDROID 1:797114794124:android:312c60b42b3e0d9a663ba9 --project nexus-core-rms --out app/google-services.json
+```
+
+Before every `git add` or commit:
+
+1. Run `git diff --staged` and visually confirm no `google-services.json` or key values are included
+2. If staged accidentally, run `git reset HEAD app/google-services.json` before committing
+3. If already committed: (a) rotate/revoke the key in Google Cloud Console, (b) BFG-purge from history, (c) force-push
+
+**History of incidents:**
+
+- `google-services.json` commit `249569a` — Firebase API key committed, BFG-purged in security fix commit `615504e`
+
 ## Project Overview
 
 NexusCoreAndroid is the Android (Jetpack Compose) client for the NexusCore multi-tenant Resource Management SaaS. It is a **frontend-only** app — it has no backend of its own. It connects to either of the two existing backends via a user-selectable toggle.
@@ -35,7 +61,7 @@ NexusCoreAndroid mirrors the **frontend/UI feature set** of NexusCoreJS and Nexu
 NexusCoreAndroid/
 ├── app/
 │   ├── build.gradle.kts
-│   ├── google-services.json         — committed; public Firebase config for nexus-core-rms
+│   ├── google-services.json         — GITIGNORED; download locally via firebase CLI (see NEVER COMMIT SECRETS above)
 │   ├── src/main/
 │   │   ├── AndroidManifest.xml
 │   │   ├── java/me/jakev/nexuscore/
@@ -98,9 +124,9 @@ NexusCoreAndroid/
 - **Package name**: `me.jakev.nexuscore` (follows `me.jakev.<appname>` convention)
 - **Firebase project**: `nexus-core-rms` (same as NexusCoreJS web app — shares Google Sign-in config)
 - **Firebase App ID**: `1:797114794124:android:312c60b42b3e0d9a663ba9`
-- `google-services.json` is committed at `app/google-services.json` — it contains only public config, no secrets
+- `google-services.json` is **gitignored** — download it locally, never commit it
 - Google Sign-in is already enabled in the `nexus-core-rms` project (used by the web app)
-- To re-download `google-services.json` if needed: `firebase apps:sdkconfig ANDROID 1:797114794124:android:312c60b42b3e0d9a663ba9 --project nexus-core-rms --out app/google-services.json`
+- To download `google-services.json` locally: `firebase apps:sdkconfig ANDROID 1:797114794124:android:312c60b42b3e0d9a663ba9 --project nexus-core-rms --out app/google-services.json`
 
 ## Backend Selector
 
@@ -114,7 +140,7 @@ The backend is selected on the **Login screen** as `FilterChip` toggles. The cho
 
 ## Important Notes
 
-- `google-services.json` is required to build. Without it, `apply plugin: 'com.google.gms.google-services'` will fail.
+- `google-services.json` is required to build. Without it, `apply plugin: 'com.google.gms.google-services'` will fail. Download it via the Firebase CLI command in the NEVER COMMIT SECRETS section above — do not commit it.
 - The `BackendChoice.DOTNET` base URL must match the actual Railway deployment URL for NexusCoreDotNet.
 - The Retrofit singleton is created once at app startup. If the user changes backend in Settings, they must restart the app for it to take effect (known limitation — document in UI).
 - All API calls require a valid Firebase ID token. The OkHttp interceptor in `AppModule` fetches it synchronously via `runBlocking` — acceptable for a mobile app but should be made async if token refresh latency becomes an issue.
