@@ -12,7 +12,9 @@ captures/
 *.aab
 *.ap_
 
-# Firebase - google-services.json is public config (no secrets), committed to repo
+# Firebase — NEVER commit google-services.json or any Firebase config file
+# Download it via: firebase apps:sdkconfig ANDROID 1:797114794124:android:312c60b42b3e0d9a663ba9 --project nexus-core-rms --out app/google-services.json
+google-services.json
 
 # Sensitive
 *.jks
