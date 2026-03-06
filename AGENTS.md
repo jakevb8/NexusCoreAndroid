@@ -35,9 +35,10 @@ NexusCoreAndroid mirrors the **frontend/UI feature set** of NexusCoreJS and Nexu
 NexusCoreAndroid/
 ├── app/
 │   ├── build.gradle.kts
+│   ├── google-services.json         — committed; public Firebase config for nexus-core-rms
 │   ├── src/main/
 │   │   ├── AndroidManifest.xml
-│   │   ├── java/com/nexuscore/android/
+│   │   ├── java/me/jakev/nexuscore/
 │   │   │   ├── NexusCoreApp.kt          — @HiltAndroidApp
 │   │   │   ├── MainActivity.kt          — @AndroidEntryPoint, setContent
 │   │   │   ├── data/
@@ -94,9 +95,12 @@ NexusCoreAndroid/
 
 ## Firebase Setup
 
-- This app uses the **NexusCoreJS Firebase project**: `nexus-core-rms`
-- A `google-services.json` file must be placed at `app/google-services.json` (not committed)
-- Download from: Firebase Console → nexus-core-rms → Project Settings → Your Apps → Android
+- **Package name**: `me.jakev.nexuscore` (follows `me.jakev.<appname>` convention)
+- **Firebase project**: `nexus-core-rms` (same as NexusCoreJS web app — shares Google Sign-in config)
+- **Firebase App ID**: `1:797114794124:android:312c60b42b3e0d9a663ba9`
+- `google-services.json` is committed at `app/google-services.json` — it contains only public config, no secrets
+- Google Sign-in is already enabled in the `nexus-core-rms` project (used by the web app)
+- To re-download `google-services.json` if needed: `firebase apps:sdkconfig ANDROID 1:797114794124:android:312c60b42b3e0d9a663ba9 --project nexus-core-rms --out app/google-services.json`
 
 ## Backend Selector
 

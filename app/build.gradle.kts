@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.nexuscore.android"
+    namespace = "me.jakev.nexuscore"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.nexuscore.android"
+        applicationId = "me.jakev.nexuscore"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

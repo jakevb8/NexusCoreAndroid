@@ -12,10 +12,10 @@ captures/
 *.aab
 *.ap_
 
-# Firebase - google-services.json contains no secrets (public config), but gitignore by default
-# Uncomment to ignore: google-services.json
+# Firebase - google-services.json is public config (no secrets), committed to repo
 
 # Sensitive
 *.jks
 *.keystore
 keystore.properties
+*.hprof
