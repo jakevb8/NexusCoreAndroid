@@ -1,5 +1,7 @@
 package me.jakev.nexuscore.ui.assets
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -25,8 +28,20 @@ fun AssetsScreen(
     onSignOut: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var search by remember { mutableStateOf("") }
     var showDeleteConfirm by remember { mutableStateOf<String?>(null) }
+    var showImportMenu by remember { mutableStateOf(false) }
+
+    val csvPickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val bytes = context.contentResolver.openInputStream(uri)?.readBytes()
+            val fileName = uri.lastPathSegment ?: "import.csv"
+            if (bytes != null) viewModel.importCsv(bytes, fileName)
+        }
+    }
 
     AppScaffold(
         title = "Assets",
@@ -34,6 +49,27 @@ fun AssetsScreen(
         showBack = true,
         actions = {
             if (uiState.isManager) {
+                IconButton(onClick = { showImportMenu = true }) {
+                    Icon(Icons.Default.MoreVert, "More")
+                }
+                DropdownMenu(expanded = showImportMenu, onDismissRequest = { showImportMenu = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Import CSV") },
+                        leadingIcon = { Icon(Icons.Default.Upload, null) },
+                        onClick = {
+                            showImportMenu = false
+                            csvPickerLauncher.launch("text/*")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Download Sample CSV") },
+                        leadingIcon = { Icon(Icons.Default.Download, null) },
+                        onClick = {
+                            showImportMenu = false
+                            viewModel.downloadSampleCsv(context)
+                        }
+                    )
+                }
                 IconButton(onClick = { navController.navigate(Screen.AssetDetail.route("new")) }) {
                     Icon(Icons.Default.Add, "New Asset")
                 }

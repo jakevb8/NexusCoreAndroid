@@ -9,6 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -22,6 +25,7 @@ fun TeamScreen(
     viewModel: TeamViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val clipboard = LocalClipboardManager.current
     var showInviteDialog by remember { mutableStateOf(false) }
     var showRemoveConfirm by remember { mutableStateOf<TeamMember?>(null) }
     var showRoleDialog by remember { mutableStateOf<TeamMember?>(null) }
@@ -48,6 +52,30 @@ fun TeamScreen(
             uiState.successMessage?.let {
                 Card(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
                     Text(it, modifier = Modifier.padding(12.dp))
+                }
+            }
+            uiState.inviteLink?.let { link ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Email not available — share this link manually:",
+                            style = MaterialTheme.typography.bodySmall)
+                        Text(link, style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        TextButton(
+                            onClick = {
+                                clipboard.setText(AnnotatedString(link))
+                                viewModel.clearMessages()
+                            },
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Icon(Icons.Default.ContentCopy, null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Copy link")
+                        }
+                    }
                 }
             }
 

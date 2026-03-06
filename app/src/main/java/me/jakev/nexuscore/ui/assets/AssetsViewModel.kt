@@ -1,5 +1,10 @@
 package me.jakev.nexuscore.ui.assets
 
+import android.content.ContentValues
+import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.jakev.nexuscore.data.api.NexusApi
@@ -10,6 +15,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import javax.inject.Inject
 
 data class AssetsUiState(
@@ -46,7 +52,7 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                         total = result.total,
                         page = page,
                         isLoading = false,
-                        isManager = me.role == Role.ORG_MANAGER || me.role == Role.SUPERADMIN
+                isManager = me.role == Role.ORG_MANAGER || me.role == Role.SUPERADMIN
                     )
                 }
             } catch (e: Exception) {
@@ -78,6 +84,37 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                 loadAssets()
             } catch (e: Exception) {
                 _uiState.update { it.copy(error = e.message, isLoading = false) }
+            }
+        }
+    }
+
+    fun downloadSampleCsv(context: Context) {
+        viewModelScope.launch {
+            try {
+                val body = api.downloadSampleCsv()
+                val bytes = body.bytes()
+                val fileName = "nexuscore_sample.csv"
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val values = ContentValues().apply {
+                        put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                        put(MediaStore.Downloads.MIME_TYPE, "text/csv")
+                        put(MediaStore.Downloads.IS_PENDING, 1)
+                    }
+                    val resolver = context.contentResolver
+                    val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    uri?.let {
+                        resolver.openOutputStream(it)?.use { out -> out.write(bytes) }
+                        values.clear()
+                        values.put(MediaStore.Downloads.IS_PENDING, 0)
+                        resolver.update(it, values, null, null)
+                    }
+                } else {
+                    val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    File(dir, fileName).writeBytes(bytes)
+                }
+                _uiState.update { it.copy(successMessage = "Sample CSV saved to Downloads") }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
             }
         }
     }
