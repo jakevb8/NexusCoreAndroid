@@ -1,6 +1,5 @@
 package me.jakev.nexuscore.di
 
-import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import me.jakev.nexuscore.data.api.BackendPreference
 import me.jakev.nexuscore.data.api.NexusApi
@@ -9,9 +8,9 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -38,6 +37,22 @@ object AppModule {
         auth: FirebaseAuth,
         backendPreference: BackendPreference
     ): OkHttpClient = OkHttpClient.Builder()
+        // Dynamically rewrite the base URL on every request so that changing
+        // the backend chip takes effect immediately without recreating Retrofit.
+        .addInterceptor { chain ->
+            val baseUrl = runBlocking { backendPreference.get().baseUrl }.toHttpUrl()
+            val original = chain.request()
+            // Only rewrite scheme, host, and port — the path (including /api/v1/...)
+            // is already correct because the placeholder base URL has the same
+            // /api/v1/ prefix as the real backends.
+            val newUrl = original.url.newBuilder()
+                .scheme(baseUrl.scheme)
+                .host(baseUrl.host)
+                .port(baseUrl.port)
+                .build()
+            val newRequest = original.newBuilder().url(newUrl).build()
+            chain.proceed(newRequest)
+        }
         .addInterceptor { chain ->
             val token = runBlocking {
                 auth.currentUser?.getIdToken(false)?.result?.token
@@ -56,12 +71,14 @@ object AppModule {
     @Singleton
     fun provideRetrofit(
         client: OkHttpClient,
-        moshi: Moshi,
-        backendPreference: BackendPreference
+        moshi: Moshi
     ): Retrofit {
-        val baseUrl = runBlocking { backendPreference.get().baseUrl }
+        // Base URL is a placeholder — the OkHttp interceptor rewrites the host
+        // and path dynamically on every request based on BackendPreference.
+        // This allows the backend chip to take effect immediately without
+        // recreating the Retrofit singleton.
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl("https://placeholder.invalid/api/v1/")
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
