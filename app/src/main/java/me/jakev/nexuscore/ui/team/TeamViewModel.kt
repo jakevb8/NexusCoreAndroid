@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.team
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.jakev.nexuscore.data.api.NexusApi
@@ -8,6 +9,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class TeamUiState(
     val members: List<TeamMember> = emptyList(),
@@ -42,15 +45,16 @@ class TeamViewModel @Inject constructor(private val api: NexusApi) : ViewModel()
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "loadTeam failed", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
     }
 
-    fun invite(email: String) {
+    fun invite(email: String, role: Role) {
         viewModelScope.launch {
             try {
-                val response = api.inviteMember(InviteRequest(email))
+                val response = api.inviteMember(InviteRequest(email = email, role = role))
                 _uiState.update {
                     it.copy(
                         successMessage = "Invite sent to $email",
@@ -58,6 +62,7 @@ class TeamViewModel @Inject constructor(private val api: NexusApi) : ViewModel()
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "invite failed email=$email role=$role", e)
                 _uiState.update { it.copy(error = e.message) }
             }
         }
@@ -70,6 +75,7 @@ class TeamViewModel @Inject constructor(private val api: NexusApi) : ViewModel()
                 _uiState.update { it.copy(successMessage = "Member removed") }
                 load()
             } catch (e: Exception) {
+                Log.e(TAG, "removeMember failed id=$id", e)
                 _uiState.update { it.copy(error = e.message) }
             }
         }
@@ -82,6 +88,7 @@ class TeamViewModel @Inject constructor(private val api: NexusApi) : ViewModel()
                 _uiState.update { it.copy(successMessage = "Role updated") }
                 load()
             } catch (e: Exception) {
+                Log.e(TAG, "updateRole failed id=$id role=$role", e)
                 _uiState.update { it.copy(error = e.message) }
             }
         }

@@ -50,8 +50,13 @@ interface NexusApi {
     suspend fun updateMemberRole(@Path("id") id: String, @Body body: UpdateRoleRequest): TeamMember
 
     // ── Reports ───────────────────────────────────────────────────────────
+    // .NET backend: GET /reports
     @GET("reports")
-    suspend fun getReports(): ReportsData
+    suspend fun getDotNetReports(): DotNetReportsResponse
+
+    // JS backend: GET /reports/stats
+    @GET("reports/stats")
+    suspend fun getJsReports(): JsReportsResponse
 
     // ── Audit logs ────────────────────────────────────────────────────────
     @GET("audit-logs")

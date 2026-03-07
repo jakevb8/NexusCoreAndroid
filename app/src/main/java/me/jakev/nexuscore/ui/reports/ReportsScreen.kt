@@ -37,7 +37,7 @@ fun ReportsScreen(
                     item {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             StatCard("Total Assets", data.totalAssets.toString(), Modifier.weight(1f))
-                            StatCard("Utilization", "${(data.utilizationRate * 100).roundToInt()}%", Modifier.weight(1f))
+                            StatCard("Utilization", "${data.utilizationRate.roundToInt()}%", Modifier.weight(1f))
                         }
                     }
                     item {

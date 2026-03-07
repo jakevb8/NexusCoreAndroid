@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.assets
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class AssetDetailUiState(
     val asset: Asset? = null,
@@ -45,6 +48,7 @@ class AssetDetailViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val assets = api.getAssets()
+                val total = assets.meta?.total ?: assets.total ?: 0
                 val asset = assets.data.firstOrNull { it.id == assetId }
                 if (asset != null) {
                     _uiState.update {
@@ -56,8 +60,11 @@ class AssetDetailViewModel @Inject constructor(
                             assignedTo = asset.assignedTo ?: ""
                         )
                     }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, error = "Asset not found") }
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "loadAsset failed id=$assetId", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
@@ -91,6 +98,7 @@ class AssetDetailViewModel @Inject constructor(
                 }
                 _uiState.update { it.copy(isSaving = false, done = true) }
             } catch (e: Exception) {
+                Log.e(TAG, "save asset failed id=$assetId isNew=$isNew", e)
                 _uiState.update { it.copy(isSaving = false, error = e.message) }
             }
         }

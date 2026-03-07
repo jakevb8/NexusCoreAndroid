@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.jakev.nexuscore.data.api.BackendChoice
@@ -10,6 +11,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class SettingsUiState(
     val me: AuthUser? = null,
@@ -37,6 +40,7 @@ class SettingsViewModel @Inject constructor(
                 val backend = backendPreference.get()
                 _uiState.update { it.copy(me = me, selectedBackend = backend, isLoading = false) }
             } catch (e: Exception) {
+                Log.e(TAG, "settings load failed", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }

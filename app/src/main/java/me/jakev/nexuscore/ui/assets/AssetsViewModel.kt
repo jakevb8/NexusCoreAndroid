@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import me.jakev.nexuscore.data.api.NexusApi
@@ -17,6 +18,8 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class AssetsUiState(
     val assets: List<Asset> = emptyList(),
@@ -49,13 +52,14 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                 _uiState.update {
                     it.copy(
                         assets = result.data,
-                        total = result.total,
+                        total = result.resolvedTotal(),
                         page = page,
                         isLoading = false,
-                isManager = me.role == Role.ORG_MANAGER || me.role == Role.SUPERADMIN
+                        isManager = me.role == Role.ORG_MANAGER || me.role == Role.SUPERADMIN
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "loadAssets failed", e)
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
         }
@@ -68,6 +72,7 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                 _uiState.update { it.copy(successMessage = "Asset deleted") }
                 loadAssets()
             } catch (e: Exception) {
+                Log.e(TAG, "deleteAsset failed id=$id", e)
                 _uiState.update { it.copy(error = e.message) }
             }
         }
@@ -83,6 +88,7 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                 _uiState.update { it.copy(importResult = result, isLoading = false) }
                 loadAssets()
             } catch (e: Exception) {
+                Log.e(TAG, "importCsv failed", e)
                 _uiState.update { it.copy(error = e.message, isLoading = false) }
             }
         }
@@ -114,6 +120,7 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
                 }
                 _uiState.update { it.copy(successMessage = "Sample CSV saved to Downloads") }
             } catch (e: Exception) {
+                Log.e(TAG, "downloadSampleCsv failed", e)
                 _uiState.update { it.copy(error = e.message) }
             }
         }

@@ -103,8 +103,8 @@ fun TeamScreen(
     if (showInviteDialog) {
         InviteDialog(
             onDismiss = { showInviteDialog = false },
-            onInvite = { email ->
-                viewModel.invite(email)
+            onInvite = { email, role ->
+                viewModel.invite(email, role)
                 showInviteDialog = false
             }
         )
@@ -167,19 +167,37 @@ private fun MemberRow(
 }
 
 @Composable
-private fun InviteDialog(onDismiss: () -> Unit, onInvite: (String) -> Unit) {
+private fun InviteDialog(onDismiss: () -> Unit, onInvite: (String, Role) -> Unit) {
     var email by remember { mutableStateOf("") }
+    var selectedRole by remember { mutableStateOf(Role.VIEWER) }
+    val assignableRoles = listOf(Role.VIEWER, Role.ASSET_MANAGER, Role.ORG_MANAGER)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Invite member") },
         text = {
-            OutlinedTextField(
-                value = email, onValueChange = { email = it },
-                label = { Text("Email address") }, singleLine = true
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = email, onValueChange = { email = it },
+                    label = { Text("Email address") }, singleLine = true
+                )
+                Text("Role", style = MaterialTheme.typography.labelMedium)
+                assignableRoles.forEach { role ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        RadioButton(
+                            selected = selectedRole == role,
+                            onClick = { selectedRole = role }
+                        )
+                        Text(role.name)
+                    }
+                }
+            }
         },
         confirmButton = {
-            TextButton(onClick = { onInvite(email) }, enabled = email.contains("@")) {
+            TextButton(onClick = { onInvite(email, selectedRole) }, enabled = email.contains("@")) {
                 Text("Send Invite")
             }
         },

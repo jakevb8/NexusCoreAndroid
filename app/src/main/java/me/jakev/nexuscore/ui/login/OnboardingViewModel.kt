@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class OnboardingUiState(val isLoading: Boolean = false, val error: String? = null)
 
@@ -40,6 +43,7 @@ class OnboardingViewModel @Inject constructor(
                 ))
                 onDone()
             } catch (e: Exception) {
+                Log.e(TAG, "register failed", e)
                 _uiState.update { it.copy(error = e.message ?: "Registration failed") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }

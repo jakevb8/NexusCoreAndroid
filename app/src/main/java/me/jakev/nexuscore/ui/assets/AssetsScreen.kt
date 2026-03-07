@@ -33,6 +33,17 @@ fun AssetsScreen(
     var showDeleteConfirm by remember { mutableStateOf<String?>(null) }
     var showImportMenu by remember { mutableStateOf(false) }
 
+    // Reload assets whenever this screen comes back into focus (e.g. after edit/create)
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            if (destination.route == Screen.Assets.route) {
+                viewModel.loadAssets()
+            }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
+
     val csvPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri ->

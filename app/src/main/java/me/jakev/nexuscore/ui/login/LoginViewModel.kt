@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+
+private const val TAG = "NexusCore"
 
 data class LoginUiState(
     val isLoading: Boolean = false,
@@ -75,6 +78,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "onFirebaseSignInSuccess failed", e)
                 _uiState.update { it.copy(error = e.message ?: "Authentication failed") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
@@ -83,6 +87,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onSignInError(message: String) {
+        Log.e(TAG, "Google sign-in error: $message")
         _uiState.update { it.copy(error = message, isLoading = false) }
     }
 }
