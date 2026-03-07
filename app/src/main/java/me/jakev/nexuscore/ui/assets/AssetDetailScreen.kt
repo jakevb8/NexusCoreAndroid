@@ -26,6 +26,7 @@ fun AssetDetailScreen(
     AppScaffold(
         title = if (viewModel.isNew) "New Asset" else "Edit Asset",
         showBack = true,
+        onBack = onBack,
         actions = {
             TextButton(
                 onClick = { viewModel.save() },

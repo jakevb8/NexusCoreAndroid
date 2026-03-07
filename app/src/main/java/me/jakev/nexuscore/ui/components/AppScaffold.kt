@@ -13,16 +13,24 @@ fun AppScaffold(
     title: String,
     navController: NavController? = null,
     showBack: Boolean = false,
+    onBack: (() -> Unit)? = null,
     actions: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
+    // Resolve the back action: prefer explicit onBack lambda, fall back to navController.popBackStack()
+    val resolvedOnBack: (() -> Unit)? = when {
+        onBack != null -> onBack
+        navController != null -> ({ navController.popBackStack() })
+        else -> null
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
-                    if (showBack && navController != null) {
-                        IconButton(onClick = { navController.popBackStack() }) {
+                    if (showBack && resolvedOnBack != null) {
+                        IconButton(onClick = resolvedOnBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
