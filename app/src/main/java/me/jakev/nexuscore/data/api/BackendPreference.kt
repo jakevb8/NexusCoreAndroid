@@ -12,7 +12,7 @@ import javax.inject.Singleton
 val Context.dataStore by preferencesDataStore(name = "nexus_prefs")
 
 enum class BackendChoice(val baseUrl: String, val label: String) {
-    JS("https://nexus-coreapi-production.up.railway.app/api/v1/", "NexusCoreJS (.NET API)"),
+    JS("https://nexus-coreapi-production.up.railway.app/api/v1/", "NexusCoreJS (Node API)"),
     DOTNET("https://nexuscoredotnet-production.up.railway.app/api/v1/", "NexusCoreDotNet")
 }
 
