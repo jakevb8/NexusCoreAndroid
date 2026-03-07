@@ -104,6 +104,9 @@ NexusCoreAndroid/
 # Build debug APK (requires ANDROID_HOME or local.properties pointing at SDK)
 ./gradlew assembleDebug
 
+# Build release AAB (locally, falls back to debug signing without env vars)
+./gradlew bundleRelease
+
 # Run unit tests
 ./gradlew test
 
@@ -112,6 +115,62 @@ NexusCoreAndroid/
 
 # Lint
 ./gradlew lint
+```
+
+## CI/CD & Google Play Publishing
+
+Releases are published to **Google Play Internal Testing** automatically when a `v*` tag is pushed to `main`.
+
+### GitHub Actions workflows
+
+- `.github/workflows/ci.yml` — runs on every push to `main` and every PR: unit tests, lint, debug APK build
+- `.github/workflows/release.yml` — runs on `v*` tags: builds signed release AAB, creates GitHub Release, uploads to Google Play Internal Testing
+
+### GitHub Actions secrets (already set)
+
+| Secret                             | Description                                                                       |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| `RELEASE_KEYSTORE_B64`             | Base64-encoded `nexuscore-android-release.jks` keystore                           |
+| `RELEASE_STORE_PASSWORD`           | Keystore password                                                                 |
+| `RELEASE_KEY_ALIAS`                | `nexuscore-android`                                                               |
+| `RELEASE_KEY_PASSWORD`             | Key password (same as store password)                                             |
+| `GOOGLE_SERVICES_B64`              | Base64-encoded `google-services.json` for CI builds                               |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play service account JSON (**must be set manually** — copy from IsaacLand) |
+
+### Release process
+
+```bash
+# Tag a release — CI builds, signs, and uploads to Google Play Internal Testing
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### Version management
+
+`versionCode` and `versionName` are passed from CI via Gradle properties (`-PversionCode` / `-PversionName`). The release workflow derives these from the git tag:
+
+- `versionName` = tag with `v` stripped (e.g., `v1.2.3` → `1.2.3`)
+- `versionCode` = count of all `v*` tags (auto-incrementing integer)
+
+When building locally without Gradle properties, defaults to `versionCode=1, versionName="1.0.0"`.
+
+### Keystore
+
+- **File**: `nexuscore-android-release.jks` (at repo root, gitignored)
+- **Alias**: `nexuscore-android`
+- **Algorithm**: RSA 4096-bit, 10,000 days validity
+- **Stored as**: `RELEASE_KEYSTORE_B64` GitHub secret (base64-encoded)
+- The `.jks` file itself lives at `/Users/jake/projects/NexusCoreAndroid/nexuscore-android-release.jks` locally — keep this backed up, it cannot be regenerated
+
+### Pushing workflow files
+
+GitHub blocks pushing `.github/workflows/` files without `workflow` OAuth scope. Use the token workaround:
+
+```bash
+TOKEN=$(gh auth token)
+git remote set-url origin "https://jakevb8:${TOKEN}@github.com/jakevb8/NexusCoreAndroid.git"
+git push
+git remote set-url origin "https://github.com/jakevb8/NexusCoreAndroid.git"
 ```
 
 ## Architecture
