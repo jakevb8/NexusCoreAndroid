@@ -19,13 +19,19 @@ data class RegisterRequest(
 )
 
 @JsonClass(generateAdapter = true)
+data class AuthUserOrg(
+    val id: String,
+    val status: OrgStatus
+)
+
+@JsonClass(generateAdapter = true)
 data class AuthUser(
     val id: String,
     val email: String,
-    val name: String?,
+    val displayName: String?,
     val role: Role,
     val organizationId: String,
-    val orgStatus: OrgStatus
+    val organization: AuthUserOrg
 )
 
 // ── Assets ────────────────────────────────────────────────────────────────

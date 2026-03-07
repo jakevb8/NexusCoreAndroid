@@ -33,7 +33,7 @@ fun SettingsScreen(
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("Account", style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary)
-                        Text(me.name ?: me.email, style = MaterialTheme.typography.bodyLarge)
+                        Text(me.displayName ?: me.email, style = MaterialTheme.typography.bodyLarge)
                         Text(me.email, style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Text("Role: ${me.role.name}", style = MaterialTheme.typography.labelMedium)
