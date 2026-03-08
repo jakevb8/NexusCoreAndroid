@@ -21,6 +21,7 @@ data class RegisterRequest(
 @JsonClass(generateAdapter = true)
 data class AuthUserOrg(
     val id: String,
+    val name: String,
     val status: OrgStatus
 )
 
