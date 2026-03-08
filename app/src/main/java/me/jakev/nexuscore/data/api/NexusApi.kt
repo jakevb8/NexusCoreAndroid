@@ -13,6 +13,9 @@ interface NexusApi {
     @GET("auth/me")
     suspend fun me(): AuthUser
 
+    @DELETE("auth/me")
+    suspend fun deleteAccount()
+
     // ── Assets ────────────────────────────────────────────────────────────
     @GET("assets")
     suspend fun getAssets(

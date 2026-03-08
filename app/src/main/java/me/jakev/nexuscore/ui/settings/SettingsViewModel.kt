@@ -7,6 +7,7 @@ import me.jakev.nexuscore.data.api.BackendChoice
 import me.jakev.nexuscore.data.api.BackendPreference
 import me.jakev.nexuscore.data.api.NexusApi
 import me.jakev.nexuscore.data.model.AuthUser
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ data class SettingsUiState(
     val me: AuthUser? = null,
     val selectedBackend: BackendChoice = BackendChoice.JS,
     val isLoading: Boolean = false,
+    val isDeletingAccount: Boolean = false,
     val error: String? = null
 )
 
@@ -50,6 +52,24 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             backendPreference.set(choice)
             _uiState.update { it.copy(selectedBackend = choice) }
+        }
+    }
+
+    /**
+     * Delete the account via DELETE /auth/me, then sign out of Firebase.
+     * [onDeleted] is called on success so the caller can navigate to the login screen.
+     */
+    fun deleteAccount(onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isDeletingAccount = true, error = null) }
+            try {
+                api.deleteAccount()
+                FirebaseAuth.getInstance().signOut()
+                onDeleted()
+            } catch (e: Exception) {
+                Log.e(TAG, "deleteAccount failed", e)
+                _uiState.update { it.copy(isDeletingAccount = false, error = e.message) }
+            }
         }
     }
 }
