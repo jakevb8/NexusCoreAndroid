@@ -1,5 +1,6 @@
 package me.jakev.nexuscore.ui.settings
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,10 +8,11 @@ import me.jakev.nexuscore.data.api.BackendChoice
 import me.jakev.nexuscore.data.api.BackendPreference
 import me.jakev.nexuscore.data.api.NexusApi
 import me.jakev.nexuscore.data.model.AuthUser
-import com.google.firebase.auth.FirebaseAuth
+import com.firebase.ui.auth.AuthUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 private const val TAG = "NexusCore"
@@ -56,15 +58,32 @@ class SettingsViewModel @Inject constructor(
     }
 
     /**
-     * Delete the account via DELETE /auth/me, then sign out of Firebase.
-     * [onDeleted] is called on success so the caller can navigate to the login screen.
+     * Sign out using AuthUI so that Google's credential cache is cleared.
+     * This forces the account chooser on the next sign-in attempt instead of
+     * silently re-authenticating with the same account.
      */
-    fun deleteAccount(onDeleted: () -> Unit) {
+    fun signOut(context: Context, onSignedOut: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                AuthUI.getInstance().signOut(context).await()
+            } catch (e: Exception) {
+                Log.e(TAG, "signOut failed", e)
+            } finally {
+                onSignedOut()
+            }
+        }
+    }
+
+    /**
+     * Delete the account via DELETE /auth/me, then sign out via AuthUI so the
+     * Google credential cache is cleared and the account chooser appears next login.
+     */
+    fun deleteAccount(context: Context, onDeleted: () -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isDeletingAccount = true, error = null) }
             try {
                 api.deleteAccount()
-                FirebaseAuth.getInstance().signOut()
+                AuthUI.getInstance().signOut(context).await()
                 onDeleted()
             } catch (e: Exception) {
                 Log.e(TAG, "deleteAccount failed", e)

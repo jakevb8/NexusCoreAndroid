@@ -3,16 +3,23 @@ package me.jakev.nexuscore.ui.login
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
+import com.firebase.ui.auth.AuthUI
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun PendingApprovalScreen(onSignOut: () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -27,8 +34,10 @@ fun PendingApprovalScreen(onSignOut: () -> Unit) {
         )
         Spacer(Modifier.height(32.dp))
         OutlinedButton(onClick = {
-            FirebaseAuth.getInstance().signOut()
-            onSignOut()
+            scope.launch {
+                try { AuthUI.getInstance().signOut(context).await() } catch (_: Exception) {}
+                onSignOut()
+            }
         }) {
             Text("Sign Out")
         }

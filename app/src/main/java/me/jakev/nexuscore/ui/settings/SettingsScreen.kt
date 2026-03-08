@@ -6,9 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import me.jakev.nexuscore.data.api.BackendChoice
 import me.jakev.nexuscore.ui.components.AppScaffold
 
@@ -19,6 +19,7 @@ fun SettingsScreen(
     onSignOut: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     AppScaffold(title = "Settings", navController = navController, showBack = true) { padding ->
@@ -72,10 +73,7 @@ fun SettingsScreen(
 
             // Sign out
             OutlinedButton(
-                onClick = {
-                    FirebaseAuth.getInstance().signOut()
-                    onSignOut()
-                },
+                onClick = { viewModel.signOut(context, onSignOut) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Sign Out")
@@ -138,7 +136,7 @@ fun SettingsScreen(
                 Button(
                     onClick = {
                         showDeleteConfirm = false
-                        viewModel.deleteAccount(onDeleted = onSignOut)
+                        viewModel.deleteAccount(context = context, onDeleted = onSignOut)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
