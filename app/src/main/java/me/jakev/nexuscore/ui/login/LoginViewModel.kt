@@ -70,8 +70,8 @@ class LoginViewModel @Inject constructor(
                     authState.value = AuthState(isSignedIn = true)
                     onAuthenticated(me.organization.status.name)
                 } catch (e: retrofit2.HttpException) {
-                    if (e.code() == 404) {
-                        // New user — needs onboarding
+                    if (e.code() == 404 || e.code() == 401) {
+                        // New / unregistered user — needs onboarding
                         onNeedsOnboarding()
                     } else {
                         throw e

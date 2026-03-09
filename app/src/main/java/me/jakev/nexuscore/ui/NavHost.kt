@@ -1,8 +1,6 @@
 package me.jakev.nexuscore.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -40,7 +38,6 @@ sealed class Screen(val route: String) {
 fun NexusCoreNavHost() {
     val navController = rememberNavController()
     val loginVm: LoginViewModel = hiltViewModel()
-    val authState by loginVm.authState.collectAsState()
 
     NavHost(navController = navController, startDestination = Screen.Login.route) {
         composable(Screen.Login.route) {
