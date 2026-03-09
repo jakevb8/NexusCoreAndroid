@@ -30,9 +30,6 @@ fun DashboardScreen(navController: NavController) {
             DashboardCard("Reports", Icons.Default.BarChart, "View utilization analytics") {
                 navController.navigate(Screen.Reports.route)
             }
-            DashboardCard("Events", Icons.Default.History, "Browse Kafka asset status change history") {
-                navController.navigate(Screen.Events.route)
-            }
             DashboardCard("Settings", Icons.Default.Settings, "Backend and account settings") {
                 navController.navigate(Screen.Settings.route)
             }
