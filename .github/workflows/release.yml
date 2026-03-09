@@ -35,6 +35,14 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.RELEASE_KEYSTORE_B64 }}
 
+      - name: Print release keystore SHA-1
+        run: |
+          keytool -list -v \
+            -keystore app/nexuscore-android-release.jks \
+            -alias ${{ secrets.RELEASE_KEY_ALIAS }} \
+            -storepass ${{ secrets.RELEASE_STORE_PASSWORD }} \
+            -noprompt 2>&1 | grep -E "SHA1:|SHA256:"
+
       - name: Derive version from tag
         id: version
         run: |
