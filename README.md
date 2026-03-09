@@ -6,9 +6,10 @@ Android client for [NexusCore](https://github.com/jakevb8/NexusCore) — a multi
 
 - Google Sign-In via Firebase Authentication
 - Backend selector: switch between the NexusCoreJS (Node) and NexusCoreDotNet (.NET) APIs
-- Asset management: list, search, create, edit, delete, CSV import
-- Team management: invite members by email, remove members, change roles
+- Asset management: list, search, create, edit, delete, CSV import, sample CSV download
+- Team management: invite members by email, copy-link fallback, remove members, change roles
 - Reports: utilization rate and assets-by-status breakdown
+- Events: paginated Kafka asset status change history with auto-refresh
 - Settings: account info, backend picker, sign out
 - Full RBAC support (`SUPERADMIN > ORG_MANAGER > ASSET_MANAGER > VIEWER`)
 
@@ -84,6 +85,7 @@ Releases are published to Google Play Internal Testing automatically when a `v*`
 | `RELEASE_STORE_PASSWORD`           | Keystore password                             |
 | `RELEASE_KEY_ALIAS`                | Key alias inside the keystore                 |
 | `RELEASE_KEY_PASSWORD`             | Key password                                  |
+| `GOOGLE_SERVICES_B64`              | Base64-encoded `google-services.json` for CI  |
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Google Play service account JSON (plain text) |
 
 ### Release process

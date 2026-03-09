@@ -209,3 +209,4 @@ The backend is selected on the **Login screen** as `FilterChip` toggles. The cho
 - The Retrofit singleton is created once at app startup. If the user changes backend in Settings, they must restart the app for it to take effect (known limitation — document in UI).
 - All API calls require a valid Firebase ID token. The OkHttp interceptor in `AppModule` fetches it synchronously via `runBlocking` — acceptable for a mobile app but should be made async if token refresh latency becomes an issue.
 - After completing any task that modifies files, always commit and push to the current branch without asking for confirmation.
+- **README maintenance**: After any feature addition, removal, or significant UI change, update `README.md` in every affected repo to reflect the current feature list. The READMEs are the public-facing source of truth and must not fall behind the code.
