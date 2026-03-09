@@ -61,6 +61,10 @@ interface NexusApi {
     @GET("reports/stats")
     suspend fun getJsReports(): JsReportsResponse
 
+    // ── Events ────────────────────────────────────────────────────────────
+    @GET("events")
+    suspend fun getEvents(@Query("page") page: Int = 1): PaginatedEvents
+
     // ── Audit logs ────────────────────────────────────────────────────────
     @GET("audit-logs")
     suspend fun getAuditLogs(@Query("page") page: Int = 1): PaginatedAuditLogs

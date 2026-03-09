@@ -16,6 +16,7 @@ import me.jakev.nexuscore.ui.login.LoginScreen
 import me.jakev.nexuscore.ui.login.LoginViewModel
 import me.jakev.nexuscore.ui.login.OnboardingScreen
 import me.jakev.nexuscore.ui.login.PendingApprovalScreen
+import me.jakev.nexuscore.ui.events.EventsScreen
 import me.jakev.nexuscore.ui.reports.ReportsScreen
 import me.jakev.nexuscore.ui.settings.SettingsScreen
 import me.jakev.nexuscore.ui.team.TeamScreen
@@ -29,6 +30,7 @@ sealed class Screen(val route: String) {
     object AssetDetail : Screen("assets/{assetId}") {
         fun route(id: String) = "assets/$id"
     }
+    object Events : Screen("events")
     object Team : Screen("team")
     object Reports : Screen("reports")
     object Settings : Screen("settings")
@@ -92,6 +94,9 @@ fun NexusCoreNavHost() {
         ) { backStack ->
             val assetId = backStack.arguments?.getString("assetId") ?: return@composable
             AssetDetailScreen(assetId = assetId, onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Events.route) {
+            EventsScreen(navController = navController)
         }
         composable(Screen.Team.route) {
             TeamScreen(navController = navController)

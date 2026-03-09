@@ -165,6 +165,36 @@ fun JsReportsResponse.toReportsData() = ReportsData(
     }
 )
 
+// ── Events ────────────────────────────────────────────────────────────────
+
+@JsonClass(generateAdapter = true)
+data class KafkaEvent(
+    val id: String,
+    val organizationId: String,
+    val assetId: String?,
+    val assetName: String?,
+    val previousStatus: String?,
+    val newStatus: String?,
+    val actorId: String?,
+    val occurredAt: String,
+    val createdAt: String
+)
+
+// Handles both backends (same dual-shape as PaginatedAssets)
+@JsonClass(generateAdapter = true)
+data class PaginatedEvents(
+    val data: List<KafkaEvent>,
+    // .NET flat fields
+    val total: Int? = null,
+    val page: Int? = null,
+    val perPage: Int? = null,
+    // JS nested meta
+    val meta: PaginatedMeta? = null
+) {
+    fun resolvedTotal(): Int = meta?.total ?: total ?: 0
+    fun resolvedPage(): Int = meta?.page ?: page ?: 1
+}
+
 // ── Audit log ─────────────────────────────────────────────────────────────
 
 @JsonClass(generateAdapter = true)
