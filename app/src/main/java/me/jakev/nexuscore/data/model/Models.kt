@@ -12,10 +12,9 @@ enum class OrgStatus { PENDING, ACTIVE, REJECTED }
 
 @JsonClass(generateAdapter = true)
 data class RegisterRequest(
-    val firebaseToken: String,
-    val orgName: String,
-    val name: String,
-    val email: String
+    val organizationName: String,
+    val organizationSlug: String,
+    val displayName: String?
 )
 
 @JsonClass(generateAdapter = true)

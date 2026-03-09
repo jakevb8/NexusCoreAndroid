@@ -16,11 +16,25 @@ fun OnboardingScreen(
     onDone: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var displayName by remember { mutableStateOf("") }
     var orgName by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
+    // Auto-derived slug, user can override
+    var orgSlug by remember { mutableStateOf("") }
+    var slugEdited by remember { mutableStateOf(false) }
+
+    // Auto-update slug when orgName changes (unless user has manually edited slug)
+    LaunchedEffect(orgName) {
+        if (!slugEdited) {
+            orgSlug = viewModel.slugify(orgName)
+        }
+    }
+
+    val slugValid = orgSlug.length >= 3 && orgSlug.matches(Regex("^[a-z0-9-]+$"))
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -28,8 +42,8 @@ fun OnboardingScreen(
         Spacer(Modifier.height(32.dp))
 
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = displayName,
+            onValueChange = { displayName = it },
             label = { Text("Your name") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -40,14 +54,31 @@ fun OnboardingScreen(
             label = { Text("Organization name") },
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(Modifier.height(12.dp))
+        OutlinedTextField(
+            value = orgSlug,
+            onValueChange = {
+                orgSlug = it.lowercase().replace(Regex("[^a-z0-9-]"), "")
+                slugEdited = true
+            },
+            label = { Text("Organization slug") },
+            supportingText = {
+                Text(
+                    "Lowercase letters, numbers, and hyphens only (min 3 chars)",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            },
+            isError = orgSlug.isNotEmpty() && !slugValid,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(Modifier.height(24.dp))
 
         if (uiState.isLoading) {
             CircularProgressIndicator()
         } else {
             Button(
-                onClick = { viewModel.register(name, orgName, onDone) },
-                enabled = name.isNotBlank() && orgName.isNotBlank(),
+                onClick = { viewModel.register(displayName, orgName, orgSlug, onDone) },
+                enabled = displayName.isNotBlank() && orgName.isNotBlank() && slugValid,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Create Organization")
