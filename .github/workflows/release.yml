@@ -71,4 +71,4 @@ jobs:
           packageName: me.jakev.nexuscore
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: internal
-          status: completed
+          status: draft
