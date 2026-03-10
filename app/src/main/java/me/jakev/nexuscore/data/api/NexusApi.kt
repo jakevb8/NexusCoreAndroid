@@ -2,13 +2,17 @@ package me.jakev.nexuscore.data.api
 
 import me.jakev.nexuscore.data.model.*
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface NexusApi {
 
     // ── Auth ──────────────────────────────────────────────────────────────
+    // Returns Response<Unit> because the register endpoint returns a bare User
+    // object (no nested organization), which is incompatible with AuthUser.
+    // The response body is not needed — onDone() triggers a fresh /auth/me fetch.
     @POST("auth/register")
-    suspend fun register(@Body body: RegisterRequest): AuthUser
+    suspend fun register(@Body body: RegisterRequest): Response<Unit>
 
     @GET("auth/me")
     suspend fun me(): AuthUser

@@ -36,12 +36,17 @@ class OnboardingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                api.register(RegisterRequest(
+                val response = api.register(RegisterRequest(
                     organizationName = orgName.trim(),
                     organizationSlug = orgSlug.trim(),
                     displayName = displayName.trim().ifEmpty { null }
                 ))
-                onDone()
+                if (response.isSuccessful) {
+                    onDone()
+                } else {
+                    val msg = response.errorBody()?.string() ?: "Registration failed (${response.code()})"
+                    _uiState.update { it.copy(error = msg) }
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "register failed", e)
                 _uiState.update { it.copy(error = e.message ?: "Registration failed") }
