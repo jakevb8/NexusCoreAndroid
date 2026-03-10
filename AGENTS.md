@@ -46,6 +46,8 @@ The user selects the backend on the **Login screen** (toggle between JS and .NET
 
 NexusCoreAndroid mirrors the **frontend/UI feature set** of NexusCoreJS and NexusCoreDotNet. When a UI feature changes in either backend repo, the equivalent change MUST be made here. Backend-only changes (e.g. business logic, migrations) do NOT require changes here.
 
+**Cross-repo check rule:** At the start of every task, read the relevant files in all sister repos to check whether an equivalent change has already been made there. If it has, apply the same change here. If this repo is ahead, propagate to the others. Never assume parity — always verify by reading the files.
+
 **Canonical UI features (all must be implemented):**
 
 | Screen       | Features                                                                            |
