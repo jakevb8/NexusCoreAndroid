@@ -30,8 +30,8 @@ data class AuthUser(
     val email: String,
     val displayName: String?,
     val role: Role,
-    val organizationId: String,
-    val organization: AuthUserOrg
+    val organizationId: String?,
+    val organization: AuthUserOrg?
 )
 
 // ── Assets ────────────────────────────────────────────────────────────────
@@ -106,7 +106,7 @@ data class CsvImportResult(
 data class TeamMember(
     val id: String,
     val email: String,
-    val name: String?,
+    val displayName: String?,
     val role: Role,
     val createdAt: String
 )

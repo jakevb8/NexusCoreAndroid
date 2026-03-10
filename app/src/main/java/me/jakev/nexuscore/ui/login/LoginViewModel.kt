@@ -68,7 +68,7 @@ class LoginViewModel @Inject constructor(
                 try {
                     val me = api.me()
                     authState.value = AuthState(isSignedIn = true)
-                    onAuthenticated(me.organization.status.name)
+                    onAuthenticated(me.organization?.status?.name ?: "ACTIVE")
                 } catch (e: retrofit2.HttpException) {
                     if (e.code() == 404 || e.code() == 401) {
                         // New / unregistered user — needs onboarding

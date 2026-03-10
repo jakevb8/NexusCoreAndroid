@@ -13,7 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun OnboardingScreen(
     viewModel: OnboardingViewModel = hiltViewModel(),
-    onDone: () -> Unit
+    onDone: (orgStatus: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var displayName by remember { mutableStateOf("") }

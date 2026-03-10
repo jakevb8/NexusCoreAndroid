@@ -113,7 +113,7 @@ fun TeamScreen(
     showRemoveConfirm?.let { member ->
         AlertDialog(
             onDismissRequest = { showRemoveConfirm = null },
-            title = { Text("Remove ${member.name ?: member.email}?") },
+            title = { Text("Remove ${member.displayName ?: member.email}?") },
             text = { Text("They will lose access immediately.") },
             confirmButton = {
                 TextButton(onClick = {
@@ -150,8 +150,8 @@ private fun MemberRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(member.name ?: member.email, style = MaterialTheme.typography.bodyLarge)
-            if (member.name != null) Text(member.email, style = MaterialTheme.typography.bodySmall,
+            Text(member.displayName ?: member.email, style = MaterialTheme.typography.bodyLarge)
+            if (member.displayName != null) Text(member.email, style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             Text(member.role.name, style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary)

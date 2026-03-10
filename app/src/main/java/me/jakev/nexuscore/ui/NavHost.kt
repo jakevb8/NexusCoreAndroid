@@ -61,8 +61,9 @@ fun NexusCoreNavHost() {
             )
         }
         composable(Screen.Onboarding.route) {
-            OnboardingScreen(onDone = {
-                navController.navigate(Screen.PendingApproval.route) {
+            OnboardingScreen(onDone = { orgStatus ->
+                val dest = if (orgStatus == "PENDING") Screen.PendingApproval.route else Screen.Dashboard.route
+                navController.navigate(dest) {
                     popUpTo(Screen.Onboarding.route) { inclusive = true }
                 }
             })

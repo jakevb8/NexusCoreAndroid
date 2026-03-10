@@ -32,7 +32,7 @@ class OnboardingViewModel @Inject constructor(
             .replace(Regex("[^a-z0-9]+"), "-")
             .trim('-')
 
-    fun register(displayName: String, orgName: String, orgSlug: String, onDone: () -> Unit) {
+    fun register(displayName: String, orgName: String, orgSlug: String, onDone: (orgStatus: String) -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
@@ -42,7 +42,15 @@ class OnboardingViewModel @Inject constructor(
                     displayName = displayName.trim().ifEmpty { null }
                 ))
                 if (response.isSuccessful) {
-                    onDone()
+                    // Fetch /auth/me to get org status (register response is flat, no organization field)
+                    try {
+                        val me = api.me()
+                        onDone(me.organization?.status?.name ?: "ACTIVE")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "me() after register failed", e)
+                        // Default to ACTIVE since orgs are auto-approved
+                        onDone("ACTIVE")
+                    }
                 } else {
                     val msg = response.errorBody()?.string() ?: "Registration failed (${response.code()})"
                     _uiState.update { it.copy(error = msg) }
