@@ -39,6 +39,7 @@ NexusCoreAndroid is the Android (Jetpack Compose) client for the NexusCore multi
 
 - `NexusCoreReact` at `/Users/jake/projects/NexusCoreReact` (GitHub: `jakevb8/NexusCoreReact`) — Expo React Native cross-platform client (iOS + Android)
 - `NexusCoreIOS` at `/Users/jake/projects/NexusCoreIOS` (GitHub: `jakevb8/NexusCoreIOS`) — SwiftUI iOS native client
+- `NexusCoreAngular` at `/Users/jake/projects/NexusCoreAngular` (GitHub: `jakevb8/NexusCoreAngular`) — Angular 21 web client
 
 The user selects the backend on the **Login screen** (toggle between JS and .NET). The choice is persisted via DataStore Preferences and applied to the Retrofit base URL.
 
