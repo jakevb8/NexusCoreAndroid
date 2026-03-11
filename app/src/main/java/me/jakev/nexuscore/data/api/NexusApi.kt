@@ -40,9 +40,6 @@ interface NexusApi {
     @POST("assets/import")
     suspend fun importCsv(@Part file: MultipartBody.Part): CsvImportResult
 
-    @GET("assets/sample-csv")
-    suspend fun downloadSampleCsv(): okhttp3.ResponseBody
-
     // ── Team ──────────────────────────────────────────────────────────────
     @GET("users")
     suspend fun getTeam(): List<TeamMember>

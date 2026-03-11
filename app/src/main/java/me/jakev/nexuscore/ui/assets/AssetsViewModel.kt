@@ -97,8 +97,10 @@ class AssetsViewModel @Inject constructor(private val api: NexusApi) : ViewModel
     fun downloadSampleCsv(context: Context) {
         viewModelScope.launch {
             try {
-                val body = api.downloadSampleCsv()
-                val bytes = body.bytes()
+                val csv = "Name,SKU,Description,Status\n" +
+                    "Laptop,LAP-001,MacBook Pro 14,AVAILABLE\n" +
+                    "Monitor,MON-001,Dell 27\" 4K,IN_USE\n"
+                val bytes = csv.toByteArray(Charsets.UTF_8)
                 val fileName = "nexuscore_sample.csv"
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val values = ContentValues().apply {
