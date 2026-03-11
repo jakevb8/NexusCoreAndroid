@@ -40,7 +40,7 @@ fun SettingsScreen(
                         Text(me.email, style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Text("Role: ${me.role.name}", style = MaterialTheme.typography.labelMedium)
-                        Text("Organization: ${me.organization.name}", style = MaterialTheme.typography.labelMedium)
+                        Text("Organization: ${me.organization?.name ?: "—"}", style = MaterialTheme.typography.labelMedium)
                     }
                 }
             }
@@ -124,7 +124,7 @@ fun SettingsScreen(
                     Text("This will permanently delete:")
                     Text("• Your user profile")
                     uiState.me?.let {
-                        Text("• Organization \"${it.organization.name}\" and all its data, if you are the last member")
+                        Text("• Organization \"${it.organization?.name ?: "your organization"}\" and all its data, if you are the last member")
                     }
                     Text("• All assets, audit logs, and invites")
                     Spacer(Modifier.height(8.dp))
