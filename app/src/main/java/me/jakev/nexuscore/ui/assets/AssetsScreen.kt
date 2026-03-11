@@ -103,13 +103,32 @@ fun AssetsScreen(
             uiState.error?.let {
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                    Text(it, modifier = Modifier.padding(12.dp), color = MaterialTheme.colorScheme.onErrorContainer)
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(it, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onErrorContainer)
+                        TextButton(onClick = { viewModel.clearMessages() }) { Text("✕") }
+                    }
+                }
+            }
+            uiState.successMessage?.let {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
+                ) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(it, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        TextButton(onClick = { viewModel.clearMessages() }) { Text("✕") }
+                    }
                 }
             }
             uiState.importResult?.let { result ->
                 Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                    Text("Import: ${result.created} created, ${result.skipped} skipped${if (result.limitReached) " (limit reached)" else ""}",
-                        modifier = Modifier.padding(12.dp))
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Import: ${result.created} created, ${result.skipped} skipped${if (result.limitReached) " (limit reached)" else ""}",
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = { viewModel.clearMessages() }) { Text("✕") }
+                    }
                 }
             }
 
