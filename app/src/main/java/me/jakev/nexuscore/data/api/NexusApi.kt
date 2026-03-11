@@ -37,7 +37,7 @@ interface NexusApi {
     suspend fun deleteAsset(@Path("id") id: String)
 
     @Multipart
-    @POST("assets/import")
+    @POST("assets/import/csv")
     suspend fun importCsv(@Part file: MultipartBody.Part): CsvImportResult
 
     // ── Team ──────────────────────────────────────────────────────────────
