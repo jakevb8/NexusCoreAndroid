@@ -56,12 +56,11 @@ NexusCoreAndroid mirrors the **frontend/UI feature set** of NexusCoreJS and Nexu
 | Login        | Google sign-in (Firebase UI), backend selector toggle (JS vs .NET), persist choice  |
 | Onboarding   | Create org form (name + org name), POST /auth/register                              |
 | Pending      | Show pending approval message, sign out                                             |
-| Dashboard    | Navigation cards to Assets, Team, Reports, Events, Settings                         |
+| Dashboard    | Navigation cards to Assets, Team, Reports, Settings                                         |
 | Assets       | List with search + pagination, create/edit/delete (manager only), CSV import        |
 | Asset Detail | Create/edit form: name, SKU, description, status, assignedTo                        |
 | Team         | List members, invite by email, remove member, change role (manager only)            |
 | Reports      | Total assets, utilization rate, assets-by-status breakdown with bar chart           |
-| Events       | Paginated Kafka asset status change history (asset name, old/new status, timestamp) |
 | Settings     | Account info, backend picker (JS vs .NET), sign out                                 |
 
 ## Project Structure
